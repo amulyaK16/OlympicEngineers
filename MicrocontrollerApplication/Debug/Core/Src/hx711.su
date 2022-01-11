@@ -1,0 +1,14 @@
+hx711.c:13:22:DWT_Init	4	static
+hx711.c:18:6:hx711_delay_us	16	static,ignoring_inline_asm
+hx711.c:29:6:hx711_lock	16	static
+hx711.c:36:6:hx711_unlock	16	static
+hx711.c:41:6:hx711_init	48	static
+hx711.c:70:9:hx711_value	32	static
+hx711.c:98:9:hx711_value_ave	40	static
+hx711.c:112:6:hx711_tare	40	static
+hx711.c:125:6:hx711_calibration	24	static
+hx711.c:133:7:hx711_weight	48	static
+hx711.c:148:6:hx711_coef_set	16	static
+hx711.c:153:7:hx711_coef_get	16	static
+hx711.c:158:6:hx711_power_down	16	static
+hx711.c:165:6:hx711_power_up	16	static

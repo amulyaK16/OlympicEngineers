@@ -1,0 +1,65 @@
+
+
+STMicroelectronics ST-LINK GDB server. Version 5.9.1
+Copyright (c) 2021, STMicroelectronics. All rights reserved.
+
+Starting server with the following options:
+        Persistent Mode            : Disabled
+        Logging Level              : 1
+        Listen Port Number         : 61234
+        Status Refresh Delay       : 15s
+        Verbose Mode               : Disabled
+        SWD Debug                  : Enabled
+        InitWhile                  : Enabled
+
+Waiting for debugger connection...
+Debugger connected
+      -------------------------------------------------------------------
+                       STM32CubeProgrammer v2.8.0                  
+      -------------------------------------------------------------------
+
+ST-LINK SN  : 066BFF303839414257095547
+ST-LINK FW  : V2J38M27
+Board       : NUCLEO-WB15CC
+Voltage     : 3.24V
+SWD freq    : 4000 KHz
+Connect mode: Under Reset
+Reset mode  : Hardware reset
+Device ID   : 0x494
+Revision ID : Rev B
+Device name : STM32WB1xxx
+Flash size  : 320 KBytes
+Device type : MCU
+Device CPU  : Cortex-M4
+BL Version  : 0x__
+
+
+
+Memory Programming ...
+Opening and parsing file: ST-LINK_GDB_server_a11332.srec
+  File          : ST-LINK_GDB_server_a11332.srec
+  Size          : 38824 Bytes
+  Address       : 0x08000000 
+
+
+Erasing memory corresponding to segment 0:
+Erasing internal memory sectors [0 18]
+Download in Progress:
+
+
+File download complete
+Time elapsed during download operation: 00:00:01.108
+
+
+
+Verifying ...
+
+
+
+
+Download verified successfully 
+
+
+Debugger connection lost.
+Shutting down...
+
