@@ -16,7 +16,6 @@
   *
   ******************************************************************************
   */
-#include "hx711.h"
 
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
@@ -26,6 +25,10 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
+#include "misc_defs.h"
+#include "queue.h"
+#include "state_machine.h"
+#include "hx711.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,6 +45,9 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
+flags_t global_flags;
+state_machine state;
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -53,7 +59,10 @@ TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-uint16_t adc_buf[ADC_BUF_LEN];
+volatile uint16_t adc_buf[ADC_BUF_LEN];
+volatile packet_t pkt;
+volatile payload_t pl;
+
 hx711_t loadcell;
 float weight;
 /* USER CODE END PV */
@@ -87,6 +96,12 @@ int main(void)
 	char msg[10];
 	float weight;
 	int loadcellCounter;
+
+	//The microcontroller is booting up
+	if(set_state(&state, STARTUP) == false)
+	{
+		Error_Handler();
+	}
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -96,6 +111,11 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 
+    //Begin to configure the mcu
+	if(set_state(&state, CONFIGURING) == false)
+	{
+		Error_Handler();
+	}
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -112,12 +132,29 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t)*adc_buf, ADC_BUF_LEN);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, ADC_BUF_LEN);
   HAL_TIM_Base_Start(&htim2);
 
   hx711_init(&loadcell, GPIOB, GPIO_PIN_5, GPIOB, GPIO_PIN_0);
   hx711_coef_set(&loadcell, 1000000); // read after calibration
   hx711_tare(&loadcell, 10);
+
+	packet_queue* queue = create_queue();
+
+
+	//AROUND HERE WOULD BE BLUETOOTH INITIALIZATION
+	if(set_state(&state, SEARCHING) == false)
+	{
+		Error_Handler();
+	}
+	if(set_state(&state, CONNECTING) == false)
+	{
+		Error_Handler();
+	}
+	if(set_state(&state, READY) == false)
+	{
+		Error_Handler();
+	}
 
   /* USER CODE END 2 */
 

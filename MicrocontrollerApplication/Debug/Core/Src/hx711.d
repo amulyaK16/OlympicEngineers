@@ -1,4 +1,4 @@
-Core/Src/hx711.o: ../Core/Src/hx711.c ../Core/Src/hx711.h \
+Core/Src/hx711.o: ../Core/Src/hx711.c ../Core/Inc/hx711.h \
  ../Core/Inc/main.h ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal.h \
  ../Core/Inc/stm32wbxx_hal_conf.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_dma.h \
@@ -38,9 +38,9 @@ Core/Src/hx711.o: ../Core/Src/hx711.c ../Core/Src/hx711.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_uart.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_uart_ex.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_system.h \
- ../Core/Src/hx711Config.h
+ ../Core/Inc/hx711Config.h
 
-../Core/Src/hx711.h:
+../Core/Inc/hx711.h:
 
 ../Core/Inc/main.h:
 
@@ -122,4 +122,4 @@ Core/Src/hx711.o: ../Core/Src/hx711.c ../Core/Src/hx711.h \
 
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_system.h:
 
-../Core/Src/hx711Config.h:
+../Core/Inc/hx711Config.h:
