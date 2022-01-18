@@ -24,12 +24,21 @@ typedef struct flags_t
 	uint8_t analog_hf     : 1; //Analog buffer half full
 	uint8_t analog_ff     : 1; //Full full
 
-	uint8_t ecg_ready     : 1;
-	uint8_t emg_ready     : 1;
-	uint8_t force_ready   : 1;
-	uint8_t accel_ready   : 1;
-	uint8_t pkt_ready     : 1;
-	uint8_t queue_full    : 1;
+	union
+	{
+		uint8_t sensor_contents;
+
+		struct
+		{
+			uint8_t ecg_ready     : 1;
+			uint8_t emg_ready     : 1;
+			uint8_t force_ready   : 1;
+			uint8_t accel_ready   : 1;
+			uint8_t gyro_ready    : 1;
+			uint8_t pkt_ready     : 1;
+			uint8_t queue_full    : 1;
+		};
+	};
 
 } flags_t;
 
@@ -38,10 +47,14 @@ typedef struct flags_t
  */
 typedef struct payload_t
 {
-	uint16_t heart_s;      //heart sensor
-	uint16_t emg_s[50];	   //emg sensor
-	uint16_t force_s[50];  //force sensor
-	uint16_t accel_s;      //accelerometer sensor
+	uint16_t heart_s[32];      //heart sensor
+	uint16_t emg_s[32];	   //emg sensor
+	uint16_t force_s;  //force sensor
+	uint16_t accelx_s[32];      //accelerometer sensor
+	uint16_t accely_s[32];      //accelerometer sensor
+	uint16_t gyrox_s[32];
+	uint16_t gyroy_s[32];      //accelerometer sensor
+
 	uint8_t  payload_size; //size of payload
 } payload_t;
 
@@ -54,7 +67,8 @@ typedef struct packet_t
 	uint8_t   reserved : 4; //reserved
 	payload_t payload;	    //payload struct
 	uint16_t  timestamp;    //time packet was sent
-	uint8_t   packet_size;  //size of packet
+	uint16_t  packet_num;
+	uint8_t   packet_size; //size of packet
 
 } packet_t;
 
