@@ -38,11 +38,13 @@ typedef struct flags_t
  */
 typedef struct payload_t
 {
-	uint16_t heart_s;      //heart sensor
-	uint16_t emg_s[50];	   //emg sensor
-	uint16_t force_s[50];  //force sensor
-	uint16_t accel_s;      //accelerometer sensor
-	uint8_t  payload_size; //size of payload
+	uint16_t heart_s[32];      //heart sensor
+	uint16_t emg_s[32];	   //emg sensor
+	uint16_t force_s;  //force sensor
+	float accel_x_s[32];      //accelerometer sensor
+	float accel_y_s[32];      //accelerometer sensor
+	float gyro_x_s[32];
+	float gyro_y_s[32];      //accelerometer sensor
 } payload_t;
 
 /* The packet contains all
