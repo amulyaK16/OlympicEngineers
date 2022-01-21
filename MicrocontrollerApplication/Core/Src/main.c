@@ -356,22 +356,26 @@ int main(void)
 		HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
 
 
-		if(sample_cnt == 32)
+		if(sample_cnt % 32 == 0 && global_flags.sensor_contents >= 0x01) //32 loops have occurred and at least 1 sensor has 1 value in it
 		{
 			pl.payload_size = global_flags.sensor_contents; //bit mask
-
 			pkt.payload = pl;
 			pkt.state = (uint8_t) state; //save the current state;
 			pkt.packet_size = sizeof(packet_t);
+			pkt.packet_num = sample_cnt;
 
 			add_packet(queue, pkt); //add packet to queue
 
 			global_flags.sensor_contents = 0x00; //reset all packet ready values
-
-			sample_cnt = 0;
 		}
 
 		sample_cnt ++;
+
+		if(global_flags.can_transmit)
+		{
+			//This is where we can send bluetooth is there is no interrupt;
+		}
+
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */

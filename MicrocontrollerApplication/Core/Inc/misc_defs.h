@@ -47,13 +47,13 @@ typedef struct flags_t
  */
 typedef struct payload_t
 {
-	uint16_t heart_s[32];      //heart sensor
+	uint16_t heart_s[32];  //heart sensor
 	uint16_t emg_s[32];	   //emg sensor
-	uint16_t force_s;  //force sensor
-	uint16_t accelx_s[32];      //accelerometer sensor
-	uint16_t accely_s[32];      //accelerometer sensor
-	uint16_t gyrox_s[32];
-	uint16_t gyroy_s[32];      //accelerometer sensor
+	uint16_t force_s;      //force sensor
+	float    accelx_s[32]; //accelerometer sensor
+	float    accely_s[32]; //accelerometer sensor
+	float    gyrox_s[32];  //gyro sensor
+	float    gyroy_s[32];  //gyro sensor
 
 	uint8_t  payload_size; //size of payload
 } payload_t;
@@ -67,8 +67,8 @@ typedef struct packet_t
 	uint8_t   reserved : 4; //reserved
 	payload_t payload;	    //payload struct
 	uint16_t  timestamp;    //time packet was sent
-	uint16_t  packet_num;
-	uint8_t   packet_size; //size of packet
+	uint16_t  packet_num;   //Packet number
+	uint16_t  packet_size;  //size of packet
 
 } packet_t;
 
