@@ -38,7 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define ADC_BUF_LEN 4096
+#define ADC_BUF_LEN 96
 
 /* USER CODE END PD */
 
@@ -187,6 +187,25 @@ void MPU6050_Read_Gyro (void)
 	Gy = Gyro_Y_RAW/131.0;
 	Gz = Gyro_Z_RAW/131.0;
 }
+
+void get_RTC_Value(char* buf)
+{
+	char _time[20];
+	char _date[20];
+
+	RTC_DateTypeDef gDate;
+	RTC_TimeTypeDef gTime;
+	/* Get the RTC current Time */
+	HAL_RTC_GetTime(&hrtc, &gTime, RTC_FORMAT_BIN);
+	/* Get the RTC current Date */
+	HAL_RTC_GetDate(&hrtc, &gDate, RTC_FORMAT_BIN);
+	/* Display time Format: hh:mm:ss */
+	sprintf((char*)_time,"[%02d:%02d:%02d ",gTime.Hours, gTime.Minutes, gTime.Seconds);
+	strcat(buf,_time);
+	/* Display date Format: dd-mm-yy */
+	sprintf((char*)_date,"%02d-%02d-%2d]: ",gDate.Date, gDate.Month, 2000 + gDate.Year);
+	strcat(buf,_date);
+}
 /* USER CODE END 0 */
 
 /**
@@ -248,6 +267,7 @@ int main(void)
 
 	MPU6050_Init();
 	HAL_Delay (1000);
+
 	packet_queue* queue = create_queue();
 
 
@@ -273,20 +293,10 @@ int main(void)
 
 	while (1)
 	{
-		char transmitString[300]="";
+		char transmitString[320]="";
 
-		RTC_DateTypeDef gDate;
-		RTC_TimeTypeDef gTime;
-		/* Get the RTC current Time */
-		HAL_RTC_GetTime(&hrtc, &gTime, RTC_FORMAT_BIN);
-		/* Get the RTC current Date */
-		HAL_RTC_GetDate(&hrtc, &gDate, RTC_FORMAT_BIN);
-		/* Display time Format: hh:mm:ss */
-		sprintf((char*)buf,"[%02d:%02d:%02d ",gTime.Hours, gTime.Minutes, gTime.Seconds);
-		strcat(transmitString,buf);
-		/* Display date Format: dd-mm-yy */
-		sprintf((char*)buf,"%02d-%02d-%2d]: ",gDate.Date, gDate.Month, 2000 + gDate.Year);
-		strcat(transmitString,buf);
+		get_RTC_Value(msg);
+		strcat(transmitString,msg);
 
 		uint32_t time1 = HAL_GetTick();
 		sprintf(msg, "%i, ", time1);
@@ -294,21 +304,18 @@ int main(void)
 
 
 		//Get ADC value
-
 		sConfig.Channel= ADC_CHANNEL_9;
 		HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 		HAL_ADC_Start(&hadc1);
 		HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 		raw=HAL_ADC_GetValue(&hadc1);
 		HAL_ADC_Stop(&hadc1);
-
 		//Convert to string and print
 		sprintf(msg, "%hu, ", raw);
 		strcat(transmitString,msg);
 
 
-
-		//	 //Get ADC value
+		//Get ADC value
 		sConfig.Channel= ADC_CHANNEL_5;
 		HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 		HAL_ADC_Start(&hadc1);
@@ -320,13 +327,9 @@ int main(void)
 		strcat(transmitString,msg);
 
 
-
-
-
 		//Read from the accelerometer and Gyroscope
 
 		// read the Accelerometer and Gyro values
-
 		MPU6050_Read_Accel();
 		MPU6050_Read_Gyro();
 
