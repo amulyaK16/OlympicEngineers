@@ -66,6 +66,8 @@ UART_HandleTypeDef huart1;
 volatile uint16_t adc_buf[ADC_BUF_LEN];
 volatile packet_t pkt;
 volatile payload_t pl;
+int sample_cnt;
+int pkt_cnt;
 
 hx711_t loadcell;
 float weight;
@@ -215,7 +217,8 @@ void get_RTC_Value(char* buf)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint16_t raw;
+	uint16_t raw_ecg_val;
+	uint16_t raw_emg_val;
 	char msg[10];
 	char buf[4];
 	float weight;
@@ -308,23 +311,28 @@ int main(void)
 		HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 		HAL_ADC_Start(&hadc1);
 		HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-		raw=HAL_ADC_GetValue(&hadc1);
+		raw_ecg_val = HAL_ADC_GetValue(&hadc1);
 		HAL_ADC_Stop(&hadc1);
 		//Convert to string and print
-		sprintf(msg, "%hu, ", raw);
+		sprintf(msg, "%hu, ", raw_ecg_val);
 		strcat(transmitString,msg);
 
+		global_flags.ecg_ready = 0x01;
+		pl.ecg_s[sample_cnt] = raw_ecg_val;
 
 		//Get ADC value
 		sConfig.Channel= ADC_CHANNEL_5;
 		HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 		HAL_ADC_Start(&hadc1);
 		HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-		raw=HAL_ADC_GetValue(&hadc1);
+		raw_emg_val = HAL_ADC_GetValue(&hadc1);
 		HAL_ADC_Stop(&hadc1);
 		//Convert to string and print
-		sprintf(msg, "%hu, ", raw);
+		sprintf(msg, "%hu, ", raw_emg_val);
 		strcat(transmitString,msg);
+
+		global_flags.emg_ready = 0x01;
+		pl.emg_s[sample_cnt] = raw_emg_val;
 
 
 		//Read from the accelerometer and Gyroscope
@@ -345,11 +353,26 @@ int main(void)
 		strcat(transmitString,buf);
 		sprintf(buf, "%f, ", Gz);
 		strcat(transmitString,buf);
+
+		global_flags.accel_ready = 0x01;
+		pl.accelx_s[sample_cnt] = Ax;
+		pl.accely_s[sample_cnt] = Ay;
+		pl.accelz_s[sample_cnt] = Az;
+
+		global_flags.gyro_ready = 0x01;
+		pl.gyrox_s[sample_cnt] = Gx;
+		pl.gyroy_s[sample_cnt] = Gy;
+		pl.gyroz_s[sample_cnt] = Gz;
+
 		// Get value from the load cell amplifier
 		//Only read the load cell value every 10000 samples
 		loadcellCounter++;
 		if(loadcellCounter > 10000){
 			weight = hx711_weight(&loadcell, 10);
+
+			global_flags.force_ready = 0x01;
+			pl.force_s = weight;
+
 			//Convert to string and print
 			sprintf(msg, "  %f,", weight);
 			strcat(transmitString,msg);
@@ -360,6 +383,44 @@ int main(void)
 		strcat(transmitString,msg);
 		HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
 
+		//Simple method to create and add packets to queue
+		if(sample_cnt % 32 == 0) //32 loops have occurred and at least 1 sensor has 1 value in it
+		{
+			//pl.payload_size = global_flags.sensor_contents; //bit mask
+			//pkt.payload = pl;
+			//pkt.state = (uint8_t) state; //save the current state;
+			//pkt.packet_size = sizeof(packet_t);
+			//pkt.packet_num = pkt_cnt;
+			//get_RTC_Value((char*)pkt.timestamp);
+
+//			if(!add_packet(queue, pkt))
+//			{
+//				sprintf(msg, "Queue Full\r\n");
+//				if(HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY) != HAL_OK)
+//				{
+//					Error_Handler();
+//				}
+//			}
+//			else
+//			{
+//				sprintf(msg, "Added to Queue\r\n");
+//				if(HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY) != HAL_OK)
+//				{
+//					Error_Handler();
+//				}
+//			}
+
+			//global_flags.sensor_contents = 0x00; //reset all packet ready values
+			pkt_cnt ++;
+			sample_cnt = 0;
+		}
+
+		sample_cnt ++;
+//
+//		if(global_flags.can_transmit)
+//		{
+//			//This is where we can send bluetooth is there is no interrupt;
+//		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

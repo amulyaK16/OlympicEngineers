@@ -24,27 +24,43 @@ typedef struct flags_t
 	uint8_t analog_hf     : 1; //Analog buffer half full
 	uint8_t analog_ff     : 1; //Full full
 
-	uint8_t ecg_ready     : 1;
-	uint8_t emg_ready     : 1;
-	uint8_t force_ready   : 1;
-	uint8_t accel_ready   : 1;
-	uint8_t pkt_ready     : 1;
-	uint8_t queue_full    : 1;
+	union
+	{
+		uint8_t sensor_contents;
+
+		struct
+		{
+			uint8_t ecg_ready     : 1;
+			uint8_t emg_ready     : 1;
+			uint8_t force_ready   : 1;
+			uint8_t accel_ready   : 1;
+			uint8_t gyro_ready    : 1;
+			uint8_t pkt_ready     : 1;
+			uint8_t queue_full    : 1;
+		};
+	};
 
 } flags_t;
 
 /* The payload contains the
  * sensor values
  */
+/* The payload contains the
+ * sensor values
+ */
 typedef struct payload_t
 {
-	uint16_t heart_s[32];      //heart sensor
+	uint16_t ecg_s[32];     //heart sensor
 	uint16_t emg_s[32];	   //emg sensor
-	uint16_t force_s;  //force sensor
-	float accel_x_s[32];      //accelerometer sensor
-	float accel_y_s[32];      //accelerometer sensor
-	float gyro_x_s[32];
-	float gyro_y_s[32];      //accelerometer sensor
+	float    force_s;      //force sensor
+	float    accelx_s[32]; //accelerometer sensor
+	float    accely_s[32]; //accelerometer sensor
+	float    accelz_s[32]; //accelerometer sensor
+	float    gyrox_s[32];  //gyro sensor
+	float    gyroy_s[32];  //gyro sensor
+	float    gyroz_s[32];  //gyro sensor
+
+	uint8_t  payload_size; //size of payload
 } payload_t;
 
 /* The packet contains all
@@ -52,11 +68,12 @@ typedef struct payload_t
  */
 typedef struct packet_t
 {
-	uint8_t   state : 4;    //The current state of the microcontroller
-	uint8_t   reserved : 4; //reserved
-	payload_t payload;	    //payload struct
-	uint16_t  timestamp;    //time packet was sent
-	uint8_t   packet_size;  //size of packet
+	uint8_t   state : 4;     //The current state of the microcontroller
+	uint8_t   reserved : 4;  //reserved
+	payload_t payload;	     //payload struct
+	char      timestamp[20]; //time packet was sent
+	uint16_t  packet_num;    //Packet number
+	uint16_t  packet_size;   //size of packet
 
 } packet_t;
 
