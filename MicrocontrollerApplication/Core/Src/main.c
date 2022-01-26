@@ -225,12 +225,18 @@ int main(void)
 	}
   /* USER CODE END Init */
 
+
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-	HAL_Delay (5000);
 
+	HAL_Delay (5000);
+	char tmp[] = "Ready...\n\r";
+	if(HAL_UART_Transmit(&huart1, (uint8_t*)tmp, strlen(tmp), HAL_MAX_DELAY) != HAL_OK)
+	{
+		Error_Handler();
+	}
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
