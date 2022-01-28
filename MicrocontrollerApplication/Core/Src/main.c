@@ -64,6 +64,10 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 volatile uint16_t adc_buf[ADC_BUF_LEN];
+
+static const packet_t null_pkt;
+static const payload_t null_pl;
+
 volatile packet_t pkt;
 volatile payload_t pl;
 int sample_cnt;
@@ -202,10 +206,10 @@ void get_RTC_Value(char* buf)
 	/* Get the RTC current Date */
 	HAL_RTC_GetDate(&hrtc, &gDate, RTC_FORMAT_BIN);
 	/* Display time Format: hh:mm:ss */
-	sprintf((char*)_time,"[%02d:%02d:%02d ",gTime.Hours, gTime.Minutes, gTime.Seconds);
+	sprintf((char*)_time,"%02d:%02d:%02d ",gTime.Hours, gTime.Minutes, gTime.Seconds);
 	strcat(buf,_time);
 	/* Display date Format: dd-mm-yy */
-	sprintf((char*)_date,"%02d-%02d-%2d]: ",gDate.Date, gDate.Month, 2000 + gDate.Year);
+	sprintf((char*)_date,"%02d-%02d-%2d\n",gDate.Date, gDate.Month, 2000 + gDate.Year);
 	strcat(buf,_date);
 }
 /* USER CODE END 0 */
@@ -384,14 +388,14 @@ int main(void)
 		HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
 
 		//Simple method to create and add packets to queue
-		if(sample_cnt % 32 == 0) //32 loops have occurred and at least 1 sensor has 1 value in it
+		if(sample_cnt % 32 == 0 && sample_cnt != 0) //32 loops have occurred and at least 1 sensor has 1 value in it
 		{
-			//pl.payload_size = global_flags.sensor_contents; //bit mask
-			//pkt.payload = pl;
-			//pkt.state = (uint8_t) state; //save the current state;
-			//pkt.packet_size = sizeof(packet_t);
-			//pkt.packet_num = pkt_cnt;
-			//get_RTC_Value((char*)pkt.timestamp);
+			pl.payload_size = global_flags.sensor_contents; //bit mask
+			pkt.payload = pl;
+			pkt.state = (uint8_t) state; //save the current state;
+			pkt.packet_size = sizeof(packet_t);
+			pkt.packet_num = pkt_cnt;
+			get_RTC_Value((char*)pkt.timestamp);
 
 //			if(!add_packet(queue, pkt))
 //			{
@@ -409,8 +413,10 @@ int main(void)
 //					Error_Handler();
 //				}
 //			}
+			pl = null_pl;
+			pkt = null_pkt;
 
-			//global_flags.sensor_contents = 0x00; //reset all packet ready values
+			global_flags.sensor_contents = 0x00; //reset all packet ready values
 			pkt_cnt ++;
 			sample_cnt = 0;
 		}
