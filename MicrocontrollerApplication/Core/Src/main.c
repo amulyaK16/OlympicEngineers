@@ -277,6 +277,14 @@ int main(void)
 
 	packet_queue* queue = create_queue();
 
+	if(queue == NULL)
+	{
+		if(set_state(&state, INIT_QUEUE_FAIL) == false)
+		{
+			Error_Handler();
+		}
+	}
+
 
 	//AROUND HERE WOULD BE BLUETOOTH INITIALIZATION
 	if(set_state(&state, SEARCHING) == false)
@@ -300,6 +308,12 @@ int main(void)
 
 	while (1)
 	{
+
+		if(set_state(&state, READING) == false)
+		{
+			Error_Handler();
+		}
+
 		char transmitString[320]="";
 
 		get_RTC_Value(msg);
@@ -383,13 +397,17 @@ int main(void)
 			loadcellCounter = 0;
 		}
 
-		sprintf(msg, "%\r\n");
-		strcat(transmitString,msg);
-		HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
+//		sprintf(msg, "%\r\n");
+//		strcat(transmitString,msg);
+//		HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
 
 		//Simple method to create and add packets to queue
 		if(sample_cnt % 32 == 0 && sample_cnt != 0) //32 loops have occurred and at least 1 sensor has 1 value in it
 		{
+			if(set_state(&state, STORING) == false)
+			{
+				Error_Handler();
+			}
 			pl.payload_size = global_flags.sensor_contents; //bit mask
 			pkt.payload = pl;
 			pkt.state = (uint8_t) state; //save the current state;
@@ -397,9 +415,11 @@ int main(void)
 			pkt.packet_num = pkt_cnt;
 			get_RTC_Value((char*)pkt.timestamp);
 
-//			if(!add_packet(queue, pkt))
+//			if(add_packet(queue, pkt) == false)
 //			{
-//				sprintf(msg, "Queue Full\r\n");
+//				sprintf(msg, "Full\r\n");
+//				global_flags.queue_full = 0x01;
+//				HAL_Delay (2000);
 //				if(HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY) != HAL_OK)
 //				{
 //					Error_Handler();
@@ -407,7 +427,8 @@ int main(void)
 //			}
 //			else
 //			{
-//				sprintf(msg, "Added to Queue\r\n");
+//				sprintf(msg, "Added\r\n");
+//				HAL_Delay (2000);
 //				if(HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY) != HAL_OK)
 //				{
 //					Error_Handler();

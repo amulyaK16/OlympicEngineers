@@ -25,7 +25,8 @@ typedef enum state_machine
 	SENSOR_FAULT   = -1,
 	SEARCH_TIMEOUT = -2,
 	START_FAIL     = -3,
-	STOP_FAIL      = -4
+	STOP_FAIL      = -4,
+	INIT_QUEUE_FAIL= -5
 
 } state_machine;
 

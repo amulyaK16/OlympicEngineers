@@ -56,7 +56,7 @@ bool set_state(state_machine* curr_state, state_machine new_state)
 	switch(*curr_state)
 	{
 	case NONE:
-		if(new_state == STARTUP)
+		if(new_state == STARTUP || new_state < 0)
 		{
 			*curr_state = new_state;
 			return true;
@@ -66,7 +66,7 @@ bool set_state(state_machine* curr_state, state_machine new_state)
 			return false;
 		}
 	case STARTUP:
-		if(new_state == CONFIGURING)
+		if(new_state == CONFIGURING || new_state < 0)
 		{
 			*curr_state = new_state;
 			return true;
@@ -74,7 +74,7 @@ bool set_state(state_machine* curr_state, state_machine new_state)
 		return false;
 
 	case CONFIGURING:
-		if(new_state == SEARCHING)
+		if(new_state == SEARCHING || new_state < 0)
 		{
 			*curr_state = new_state;
 			return true;
@@ -82,7 +82,7 @@ bool set_state(state_machine* curr_state, state_machine new_state)
 		return false;
 
 	case SEARCHING:
-		if(new_state == CONNECTING)
+		if(new_state == CONNECTING || new_state < 0)
 		{
 			*curr_state = new_state;
 			return true;
@@ -90,7 +90,7 @@ bool set_state(state_machine* curr_state, state_machine new_state)
 		return false;
 
 	case CONNECTING:
-		if(new_state == READY)
+		if(new_state == READY || new_state < 0)
 		{
 			*curr_state = new_state;
 			return true;
@@ -98,7 +98,7 @@ bool set_state(state_machine* curr_state, state_machine new_state)
 		return false;
 
 	case READY:
-		if(new_state == READING)
+		if(new_state == READING || new_state < 0)
 		{
 			*curr_state = new_state;
 			return true;
@@ -106,9 +106,24 @@ bool set_state(state_machine* curr_state, state_machine new_state)
 		return false;
 
 	case READING:
-		if(new_state == STORING && global_flags.pkt_ready == true)
+		if(new_state == STORING && global_flags.pkt_ready == true || new_state < 0)
 		{
+			*curr_state = new_state;
+			return true;
+		}
 
+	case STORING:
+		if(new_state == READING || new_state < 0)
+		{
+			*curr_state = new_state;
+			return true;
+		}
+
+	case SENDING:
+		if(new_state == READING || new_state < 0)
+		{
+			*curr_state = new_state;
+			return true;
 		}
 	default:
 		return false;

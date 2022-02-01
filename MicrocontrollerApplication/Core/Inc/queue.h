@@ -8,7 +8,7 @@
 #ifndef INC_QUEUE_H_
 #define INC_QUEUE_H_
 
-#define MAX_QUEUE_SIZE 8
+#define MAX_QUEUE_SIZE 4
 
 typedef struct payload_t payload_t;
 typedef struct packet_t packet_t;
