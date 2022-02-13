@@ -61,21 +61,21 @@ typedef struct payload_t
 	float    gyroz_s[32];  //gyro sensor
 
 	uint8_t  payload_size; //size of payload
-} payload_t;
+} __attribute__((packed)) payload_t;
 
 /* The packet contains all
  * overhead and meta-data
  */
 typedef struct packet_t
 {
+	uint32_t  start;
+	uint16_t  packet_size;   //size of packet
+	uint16_t  packet_num;    //Packet number
 	uint8_t   state : 4;     //The current state of the microcontroller
 	uint8_t   reserved : 4;  //reserved
 	payload_t payload;	     //payload struct
 	char      timestamp[24]; //time packet was sent
-	uint16_t  packet_num;    //Packet number
-	uint16_t  packet_size;   //size of packet
-
-} packet_t;
+} __attribute__((packed)) packet_t;
 
 /* A single node of the queue */
 typedef struct packet_node

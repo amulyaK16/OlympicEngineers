@@ -70,6 +70,7 @@ uint8_t add_packet(packet_queue* queue, packet_t packet)
 {
 	if(queue->size >= MAX_QUEUE_SIZE)
 	{
+		queue->full = 0x01;
 		return false;
 	}
 	else
@@ -127,6 +128,11 @@ packet_t rem_packet(packet_queue* queue)
 	if(queue->front == NULL)
 	{
 		queue->back = NULL;
+	}
+
+	if(queue->size >= MAX_QUEUE_SIZE)
+	{
+		queue->full = 0x00;
 	}
 
 	pkt = tmp_node->packet;

@@ -314,7 +314,7 @@ int main(void)
 			Error_Handler();
 		}
 
-		char transmitString[320]="";
+		char transmitString[340]="";
 
 		get_RTC_Value(msg);
 		strcat(transmitString,msg);
@@ -397,9 +397,9 @@ int main(void)
 			loadcellCounter = 0;
 		}
 
-//		sprintf(msg, "%\r\n");
-//		strcat(transmitString,msg);
-//		HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
+		sprintf(msg, "%\r\n");
+		strcat(transmitString,msg);
+		HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
 
 		//Simple method to create and add packets to queue
 		if(sample_cnt % 32 == 0 && sample_cnt != 0) //32 loops have occurred and at least 1 sensor has 1 value in it
@@ -409,11 +409,15 @@ int main(void)
 				Error_Handler();
 			}
 			pl.payload_size = global_flags.sensor_contents; //bit mask
+
+			pkt.start = 0xFFFFFFFF;
 			pkt.payload = pl;
 			pkt.state = (uint8_t) state; //save the current state;
 			pkt.packet_size = sizeof(packet_t);
 			pkt.packet_num = pkt_cnt;
 			get_RTC_Value((char*)pkt.timestamp);
+
+			//HAL_UART_Transmit(&huart1, (uint8_t*)&pkt, pkt.packet_size, HAL_MAX_DELAY);
 
 //			if(add_packet(queue, pkt) == false)
 //			{
