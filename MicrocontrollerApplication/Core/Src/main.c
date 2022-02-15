@@ -396,10 +396,14 @@ int main(void)
 			strcat(transmitString,msg);
 			loadcellCounter = 0;
 		}
+		else
+		{
+			pl.force_s = 0;
+		}
 
 		sprintf(msg, "%\r\n");
 		strcat(transmitString,msg);
-		HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
+		//HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
 
 		//Simple method to create and add packets to queue
 		if(sample_cnt % 32 == 0 && sample_cnt != 0) //32 loops have occurred and at least 1 sensor has 1 value in it
@@ -417,7 +421,7 @@ int main(void)
 			pkt.packet_num = pkt_cnt;
 			get_RTC_Value((char*)pkt.timestamp);
 
-			//HAL_UART_Transmit(&huart1, (uint8_t*)&pkt, pkt.packet_size, HAL_MAX_DELAY);
+			HAL_UART_Transmit(&huart1, (uint8_t*)&pkt, pkt.packet_size, HAL_MAX_DELAY);
 
 //			if(add_packet(queue, pkt) == false)
 //			{
@@ -758,7 +762,7 @@ static void MX_USART1_UART_Init(void)
   huart1.Init.BaudRate = 115200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_EVEN;
+  huart1.Init.Parity = UART_PARITY_NONE;
   huart1.Init.Mode = UART_MODE_TX_RX;
   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
