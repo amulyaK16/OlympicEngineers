@@ -23,6 +23,7 @@ typedef struct flags_t
 	uint8_t can_transmit  : 1; //
 	uint8_t analog_hf     : 1; //Analog buffer half full
 	uint8_t analog_ff     : 1; //Full full
+	uint8_t str_debug     : 1;
 
 	union
 	{

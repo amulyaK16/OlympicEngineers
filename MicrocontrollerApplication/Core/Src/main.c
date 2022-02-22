@@ -228,6 +228,10 @@ int main(void)
 	float weight;
 	int loadcellCounter;
 
+	//*** Uncomment to print str to UART ***//
+	global_flags.str_debug = 0;
+    //*************************************//
+
 	//The microcontroller is booting up
 	if(set_state(&state, STARTUP) == false)
 	{
@@ -316,13 +320,16 @@ int main(void)
 
 		char transmitString[340]="";
 
-		get_RTC_Value(msg);
-		strcat(transmitString,msg);
+		if(global_flags.str_debug)
+		{
+			get_RTC_Value(msg);
+			strcat(transmitString,msg);
 
-		uint32_t time1 = HAL_GetTick();
-		sprintf(msg, "%i, ", time1);
-		strcat(transmitString,msg);
+			uint32_t time1 = HAL_GetTick();
 
+			sprintf(msg, "%i, ", time1);
+			strcat(transmitString,msg);
+		}
 
 		//Get ADC value
 		sConfig.Channel= ADC_CHANNEL_9;
@@ -331,9 +338,12 @@ int main(void)
 		HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 		raw_ecg_val = HAL_ADC_GetValue(&hadc1);
 		HAL_ADC_Stop(&hadc1);
-		//Convert to string and print
-		sprintf(msg, "%hu, ", raw_ecg_val);
-		strcat(transmitString,msg);
+
+		if(global_flags.str_debug)
+		{
+			sprintf(msg, "%hu, ", raw_ecg_val);
+			strcat(transmitString,msg);
+		}
 
 		global_flags.ecg_ready = 0x01;
 		pl.ecg_s[sample_cnt] = raw_ecg_val;
@@ -345,32 +355,36 @@ int main(void)
 		HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 		raw_emg_val = HAL_ADC_GetValue(&hadc1);
 		HAL_ADC_Stop(&hadc1);
-		//Convert to string and print
-		sprintf(msg, "%hu, ", raw_emg_val);
-		strcat(transmitString,msg);
+
+		if(global_flags.str_debug)
+		{
+			sprintf(msg, "%hu, ", raw_emg_val);
+			strcat(transmitString,msg);
+		}
 
 		global_flags.emg_ready = 0x01;
 		pl.emg_s[sample_cnt] = raw_emg_val;
 
 
-		//Read from the accelerometer and Gyroscope
-
 		// read the Accelerometer and Gyro values
 		MPU6050_Read_Accel();
 		MPU6050_Read_Gyro();
 
-		sprintf(buf, "%f, ", Ax);
-		strcat(transmitString,buf);
-		sprintf(buf, "%f, ", Ay);
-		strcat(transmitString,buf);
-		sprintf(buf, "%f, ", Az);
-		strcat(transmitString,buf);
-		sprintf(buf, "%f, ", Gx);
-		strcat(transmitString,buf);
-		sprintf(buf, "%f, ", Gy);
-		strcat(transmitString,buf);
-		sprintf(buf, "%f, ", Gz);
-		strcat(transmitString,buf);
+		if(global_flags.str_debug)
+		{
+			sprintf(buf, "%f, ", Ax);
+			strcat(transmitString,buf);
+			sprintf(buf, "%f, ", Ay);
+			strcat(transmitString,buf);
+			sprintf(buf, "%f, ", Az);
+			strcat(transmitString,buf);
+			sprintf(buf, "%f, ", Gx);
+			strcat(transmitString,buf);
+			sprintf(buf, "%f, ", Gy);
+			strcat(transmitString,buf);
+			sprintf(buf, "%f, ", Gz);
+			strcat(transmitString,buf);
+		}
 
 		global_flags.accel_ready = 0x01;
 		pl.accelx_s[sample_cnt] = Ax;
@@ -389,21 +403,25 @@ int main(void)
 			weight = hx711_weight(&loadcell, 10);
 
 			global_flags.force_ready = 0x01;
-			pl.force_s = weight;
-
-			//Convert to string and print
-			sprintf(msg, "  %f,", weight);
-			strcat(transmitString,msg);
 			loadcellCounter = 0;
+
+			if(global_flags.str_debug)
+			{
+				sprintf(msg, "  %f,", weight);
+				strcat(transmitString,msg);
+			}
 		}
 		else
 		{
 			pl.force_s = 0;
 		}
 
-		sprintf(msg, "%\r\n");
-		strcat(transmitString,msg);
-		//HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
+		if(global_flags.str_debug)
+		{
+			sprintf(msg, "%\r\n");
+			strcat(transmitString,msg);
+			HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
+		}
 
 		//Simple method to create and add packets to queue
 		if(sample_cnt % 32 == 0 && sample_cnt != 0) //32 loops have occurred and at least 1 sensor has 1 value in it
