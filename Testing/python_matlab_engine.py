@@ -1,6 +1,7 @@
 import matlab.engine
 import os, sys
 import csv
+import matplotlib.pyplot as plt
 
 '''
 Chase Badalato
@@ -22,8 +23,11 @@ with open('ECG_SAMPLES.csv') as csv_file:
         	line_count += 1
         else:
             #print('Time: ' + str(row[0][:-2]) + '    Value: ' + str(row[1]))
-            ecg_vals.append(int(row[1]))
-            line_count += 1
+            try:
+            	ecg_vals.append(int(row[1]))
+            	line_count += 1
+            except:
+            	line_count += 1
 
     print(f'Processed {line_count} lines.')
 
@@ -35,9 +39,12 @@ eng = matlab.engine.start_matlab()
 eng.addpath(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname("matlab_functions.m"))),nargout=0)
 
 matlab_ecg = matlab.uint16(ecg_vals)
-res = eng.matlab_functions(matlab_ecg, nargout = 1)
-print("Matlab Result: " + str(res))
+freq, time, BPM = eng.matlab_functions(matlab_ecg, nargout = 3)
+#print("Matlab Result: " + str(res))
 
+print(BPM)
+plt.plot(time, freq)
+plt.show()
 # x = 4.0
 # eng.workspace['y'] = x
 # a = eng.eval('sqrt(y)')
