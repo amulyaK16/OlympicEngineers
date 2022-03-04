@@ -229,7 +229,7 @@ int main(void)
 	int loadcellCounter;
 
 	//*** Uncomment to print str to UART ***//
-	global_flags.str_debug = 0;
+	global_flags.str_debug = 1;
     //*************************************//
 
 	//The microcontroller is booting up
@@ -416,16 +416,17 @@ int main(void)
 			pl.force_s = 0;
 		}
 
-		if(global_flags.str_debug)
-		{
-			sprintf(msg, "%\r\n");
-			strcat(transmitString,msg);
-			HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
-		}
+//		if(global_flags.str_debug)
+//		{
+//			sprintf(msg, "%\r\n");
+//			strcat(transmitString,msg);
+//			HAL_UART_Transmit(&huart1, (uint8_t*)transmitString, strlen(transmitString), HAL_MAX_DELAY);
+//		}
 
 		//Simple method to create and add packets to queue
 		if(sample_cnt % 32 == 0 && sample_cnt != 0) //32 loops have occurred and at least 1 sensor has 1 value in it
 		{
+
 			if(set_state(&state, STORING) == false)
 			{
 				Error_Handler();
@@ -439,7 +440,10 @@ int main(void)
 			pkt.packet_num = pkt_cnt;
 			get_RTC_Value((char*)pkt.timestamp);
 
-			HAL_UART_Transmit(&huart1, (uint8_t*)&pkt, pkt.packet_size, HAL_MAX_DELAY);
+			if(!global_flags.str_debug)
+			{
+				HAL_UART_Transmit(&huart1, (uint8_t*)&pkt, pkt.packet_size, HAL_MAX_DELAY);
+			}
 
 //			if(add_packet(queue, pkt) == false)
 //			{
@@ -735,9 +739,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 8000-1;
+  htim2.Init.Prescaler = 4000;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 10000-1;
+  htim2.Init.Period = 10000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -756,7 +760,8 @@ static void MX_TIM2_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM2_Init 2 */
-
+  HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(TIM2_IRQn);
   /* USER CODE END TIM2_Init 2 */
 
 }
@@ -889,7 +894,14 @@ static void MX_GPIO_Init(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
+	if(htim->Instance == TIM2)
+	{
+		HAL_UART_Transmit(&huart1, (uint8_t*)"Interrupt!\r\n", 15, HAL_MAX_DELAY);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+		HAL_Delay(1000);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
 
+	}
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM1) {
     HAL_IncTick();

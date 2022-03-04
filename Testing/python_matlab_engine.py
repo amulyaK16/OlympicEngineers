@@ -10,8 +10,11 @@ Chase Badalato
 
 Connect to the matlab engine and run analysis
 '''
+print()
 print("Retrieving Values ...")
 ecg_vals = []
+date_str = []
+
 with open('ECG_SAMPLES.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     line_count = 0
@@ -25,6 +28,7 @@ with open('ECG_SAMPLES.csv') as csv_file:
             #print('Time: ' + str(row[0][:-2]) + '    Value: ' + str(row[1]))
             try:
             	ecg_vals.append(int(row[1]))
+            	date_str.append(row[0])
             	line_count += 1
             except:
             	line_count += 1
@@ -42,9 +46,8 @@ matlab_ecg = matlab.uint16(ecg_vals)
 freq, time, BPM = eng.matlab_functions(matlab_ecg, nargout = 3)
 #print("Matlab Result: " + str(res))
 
-print(BPM)
-plt.plot(time, freq)
-plt.show()
+print("Returned BPM: " + str(BPM))
+print() 
 # x = 4.0
 # eng.workspace['y'] = x
 # a = eng.eval('sqrt(y)')
