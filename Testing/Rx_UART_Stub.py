@@ -19,11 +19,6 @@ def connect_to_stm_serial(serial_number):
 
 #ser = connect_to_stm_serial(serial_number='85430353531351B09121')
 
-usb_port = connect_to_stm()
-port = serial.Serial(usb_port, baudrate=115200, bytesize=8, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=25.0)
-rcv = []
-cnt = 0
-
 def print_packet(packet):
 	print(rcv.hex(' '))
 	print("")
@@ -66,27 +61,33 @@ def print_packet(packet):
 	for char in packet[x:x + 24]:
 		print("Time: " + str(char))
 
-ecg_file = open("ecg_samples.txt", "w", encoding='UTF8')
-print("ECG Sample Collection Running ... ")
+if __name__ == '__main__':
+	usb_port = connect_to_stm()
+	port = serial.Serial(usb_port, baudrate=115200, bytesize=8, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=25.0)
+	rcv = []
+	cnt = 0
 
-f = open('ECG_SAMPLES.csv', 'w')
-fieldnames = ["Time", "ECG_Val"]
-writer = csv.DictWriter(f, fieldnames=fieldnames, escapechar='\\')
-writer.writeheader()
+	ecg_file = open("ecg_samples.txt", "w", encoding='UTF8')
+	print("ECG Sample Collection Running ... ")
 
-while cnt < 1000:
-	rcv = port.read(934)
-	packet = struct.unpack('IHHB32H32Hf32f32f32f32f32f32fB21c', rcv)
+	f = open('ECG_SAMPLES.csv', 'w')
+	fieldnames = ["Time", "ECG_Val"]
+	writer = csv.DictWriter(f, fieldnames=fieldnames, escapechar='\\')
+	writer.writeheader()
 
-	time = b''.join(packet[-21:-4])
-	print(time.decode("utf-8"))
-	
-	for ecg_sample in packet[4:36]:
-		writer.writerow({'Time' : time.decode("utf-8"), 'ECG_Val' : ecg_sample})
-	
-	print_packet(packet)
+	while cnt < 1000:
+		rcv = port.read(934)
+		packet = struct.unpack('IHHB32H32Hf32f32f32f32f32f32fB21c', rcv)
 
-	cnt = cnt + 1
+		time = b''.join(packet[-21:-4])
+		print(time.decode("utf-8"))
+		
+		for ecg_sample in packet[4:36]:
+			writer.writerow({'Time' : time.decode("utf-8"), 'ECG_Val' : ecg_sample})
+		
+		print_packet(packet)
 
-f.close()
-ecg_file.close()
+		cnt = cnt + 1
+
+	f.close()
+	ecg_file.close()
