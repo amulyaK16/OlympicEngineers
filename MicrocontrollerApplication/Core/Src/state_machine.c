@@ -10,6 +10,7 @@
 #include <string.h>
 #include "misc_defs.h"
 #include "state_machine.h"
+#include "main.h"
 
 extern flags_t global_flags;
 
@@ -130,5 +131,55 @@ bool set_state(state_machine* curr_state, state_machine new_state)
 	}
 
 	return false;
+}
+
+void state_action(state_machine state)
+{
+	switch(state)
+	{
+	case NONE:
+		return;
+
+	case STARTUP:
+		return;
+
+	case CONFIGURING:
+		return;
+
+	case SEARCHING:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+		HAL_Delay(250);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
+		HAL_Delay(250);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+		HAL_Delay(250);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
+		HAL_Delay(2000);
+		return;
+
+	case CONNECTING:
+		return;
+
+	case READY:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+		HAL_Delay(750);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
+		HAL_Delay(2000);
+		return;
+
+	case READING:
+		return;
+
+	case STORING:
+		return;
+
+	case SENDING:
+		return;
+
+	default:
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
+		return;
+
+	}
 }
 

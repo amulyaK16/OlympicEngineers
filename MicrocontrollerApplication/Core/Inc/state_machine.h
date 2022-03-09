@@ -8,6 +8,8 @@
 #ifndef INC_STATE_MACHINE_H_
 #define INC_STATE_MACHINE_H_
 
+#define ACK 0x01
+
 typedef enum state_machine
 {
 	NONE          = 0, //Unknown state
@@ -31,5 +33,5 @@ typedef enum state_machine
 } state_machine;
 
 bool set_state(state_machine* curr_state, state_machine new_state);
-
+void state_action(state_machine state);
 #endif /* INC_STATE_MACHINE_H_ */

@@ -1,8 +1,9 @@
-function ECG= myECG(pulseLog)
-data=load('Alltest1_finalrpt.csv');
-x1=data(:,[3]);
+function [ECG] = PulseCode(pulseLog) 
+%data=load('Alltest1_finalrpt.csv');
+%x1=data(:,[3]);
 %heart rate variability 
 %https://www.mathworks.com/matlabcentral/answers/40805-heart-rate-variability
+x1 = pulseLog;
 
 % %%Pan Tompkin algorithm%%
 fs=200;
@@ -123,6 +124,8 @@ xlim([1 3])
 figure(9)
 plot(t(200:1000),x6(200:1000))
 xlabel('Time');ylabel('Amplitude (mV)');title('Input ECG Signal within a window')
+
+ECG = x6;
 end 
 
 % %Finding the QRS points
