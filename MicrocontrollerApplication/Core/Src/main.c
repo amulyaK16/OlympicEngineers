@@ -127,14 +127,14 @@ bool UART_Rx_Receive_Handler(char cmd, UART_HandleTypeDef *huart)
 
 	//Connected - PING
 	case '1':
-		HAL_UART_Transmit(huart, (uint8_t*)ACK, 15, HAL_MAX_DELAY);
+		HAL_UART_Transmit(huart, (uint8_t*)"1", UART_RX_BUF_LEN, HAL_MAX_DELAY);
 		return true;
 
 	//Start Transmission
 	case '2':
 		if(global_flags.can_transmit != 1)
 		{
-			HAL_UART_Transmit(huart, (uint8_t*)ACK, 15, HAL_MAX_DELAY);
+			HAL_UART_Transmit(huart, (uint8_t*)"1", UART_RX_BUF_LEN, HAL_MAX_DELAY);
 			global_flags.can_transmit = 1;
 		}
 		return true;
@@ -143,7 +143,7 @@ bool UART_Rx_Receive_Handler(char cmd, UART_HandleTypeDef *huart)
 	case '3':
 		if(global_flags.can_transmit == 1)
 		{
-			HAL_UART_Transmit(huart, (uint8_t*)ACK, 15, HAL_MAX_DELAY);
+			HAL_UART_Transmit(huart, (uint8_t*)"1", UART_RX_BUF_LEN, HAL_MAX_DELAY);
 			global_flags.can_transmit = 0;
 		}
 		return true;
@@ -945,7 +945,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	HAL_UART_Transmit(&huart1, (uint8_t*)UART_RX_buf, UART_RX_BUF_LEN, HAL_MAX_DELAY);
+	//HAL_UART_Transmit(&huart1, (uint8_t*)UART_RX_buf, UART_RX_BUF_LEN, HAL_MAX_DELAY);
 	global_flags.ble_interrupt = 1;
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 	HAL_UART_Receive_IT(&huart1, UART_RX_buf, UART_RX_BUF_LEN);
