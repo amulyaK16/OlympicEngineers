@@ -1,4 +1,4 @@
 queue.c:28:15:create_queue	16	static
 queue.c:49:14:add_node	16	static
-queue.c:69:9:add_packet	944	static
-queue.c:116:10:rem_packet	960	static
+queue.c:69:9:add_packet	200	static
+queue.c:116:10:rem_packet	216	static

@@ -356,7 +356,6 @@ int main(void)
 	{
 		Error_Handler();
 	}
-
 	while(global_flags.can_transmit == 0x00)
 	{
 		if(global_flags.ble_interrupt)
@@ -429,8 +428,21 @@ int main(void)
 
 
 		// read the Accelerometer and Gyro values
-		//MPU6050_Read_Accel();
-		//MPU6050_Read_Gyro();
+		if(sample_cnt % 32 == 0)
+		{
+			MPU6050_Read_Accel();
+			MPU6050_Read_Gyro();
+
+			global_flags.accel_ready = 0x01;
+			pl.accelx_s = Ax;
+			pl.accely_s = Ay;
+			pl.accelz_s = Az;
+
+			global_flags.gyro_ready = 0x01;
+			pl.gyrox_s = Gx;
+			pl.gyroy_s = Gy;
+			pl.gyroz_s = Gz;
+		}
 
 		if(global_flags.str_debug)
 		{
@@ -448,15 +460,6 @@ int main(void)
 			strcat(transmitString,buf);
 		}
 
-		global_flags.accel_ready = 0x01;
-		pl.accelx_s[sample_cnt] = Ax;
-		pl.accely_s[sample_cnt] = Ay;
-		pl.accelz_s[sample_cnt] = Az;
-
-		global_flags.gyro_ready = 0x01;
-		pl.gyrox_s[sample_cnt] = Gx;
-		pl.gyroy_s[sample_cnt] = Gy;
-		pl.gyroz_s[sample_cnt] = Gz;
 
 		// Get value from the load cell amplifier
 		//Only read the load cell value every 10000 samples

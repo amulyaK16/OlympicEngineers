@@ -54,12 +54,12 @@ typedef struct payload_t
 	uint16_t ecg_s[32];     //heart sensor
 	uint16_t emg_s[32];	   //emg sensor
 	float    force_s;      //force sensor
-	float    accelx_s[32]; //accelerometer sensor
-	float    accely_s[32]; //accelerometer sensor
-	float    accelz_s[32]; //accelerometer sensor
-	float    gyrox_s[32];  //gyro sensor
-	float    gyroy_s[32];  //gyro sensor
-	float    gyroz_s[32];  //gyro sensor
+	float    accelx_s; //accelerometer sensor
+	float    accely_s; //accelerometer sensor
+	float    accelz_s; //accelerometer sensor
+	float    gyrox_s;  //gyro sensor
+	float    gyroy_s;  //gyro sensor
+	float    gyroz_s;  //gyro sensor
 
 	uint8_t  payload_size; //size of payload
 } __attribute__((packed)) payload_t;
