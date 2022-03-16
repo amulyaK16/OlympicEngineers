@@ -72,8 +72,7 @@ typedef struct packet_t
 	uint32_t  start;
 	uint16_t  packet_size;   //size of packet
 	uint16_t  packet_num;    //Packet number
-	uint8_t   state : 4;     //The current state of the microcontroller
-	uint8_t   reserved : 4;  //reserved
+	uint8_t   state;     //The current state of the microcontroller
 	payload_t payload;	     //payload struct
 	char      timestamp[24]; //time packet was sent
 } __attribute__((packed)) packet_t;
