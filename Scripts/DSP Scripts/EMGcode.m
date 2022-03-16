@@ -1,6 +1,8 @@
-function EMG= myEMG(EMGtest)
+function [EMG] = EMGCode(EMGtest)
 data=load('EMGlog1_finalrpt.csv');
-b=data(:,[2]);
+%b=data(:,[2]);
+b = EMGtest;
+
 t1=0:2:((size(b,1)*2)-1);
 figure(1);
 plot(t1,b);

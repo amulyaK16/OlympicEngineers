@@ -507,7 +507,7 @@ int main(void)
 
 			if(!global_flags.str_debug && global_flags.can_transmit)
 			{
-				HAL_UART_Transmit(&huart1, (uint8_t*)&pkt, pkt.packet_size, HAL_MAX_DELAY);
+				HAL_UART_Transmit(&huart1, (uint8_t*)&pkt, pkt.packet_size, HAL_MAX_DELAY); //size = 190
 			}
 
 			//			if(add_packet(queue, pkt) == false)
