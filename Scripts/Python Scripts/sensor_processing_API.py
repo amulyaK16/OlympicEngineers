@@ -54,7 +54,7 @@ param:
 return: unpacked packet list
 '''
 def bytes_to_packet(rcv_bytes):
-    return struct.unpack('IHHB32H32HfffffffB21c', rcv_bytes)
+    return struct.unpack('IHHB32H32HfffffffB24c', rcv_bytes)
 
 '''
 packet_to_dict

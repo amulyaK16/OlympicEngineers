@@ -407,8 +407,8 @@ int main(void)
 		}
 
 		global_flags.ecg_ready = 0x01;
-		pl.ecg_s[sample_cnt] = raw_ecg_val;
-
+		pl.ecg_s[sample_cnt - 1] = raw_ecg_val;
+		//pl.ecg_s[sample_cnt - 1] = 0xCCCC;
 		//Get ADC value
 		sConfig.Channel= ADC_CHANNEL_5;
 		HAL_ADC_ConfigChannel(&hadc1, &sConfig);
@@ -424,8 +424,8 @@ int main(void)
 		}
 
 		global_flags.emg_ready = 0x01;
-		pl.emg_s[sample_cnt] = raw_emg_val;
-
+		pl.emg_s[sample_cnt - 1] = raw_emg_val;
+		//pl.emg_s[sample_cnt - 1] = 0xBBBB;
 
 		// read the Accelerometer and Gyro values
 		if(sample_cnt % 32 == 0)
@@ -442,6 +442,16 @@ int main(void)
 			pl.gyrox_s = Gx;
 			pl.gyroy_s = Gy;
 			pl.gyroz_s = Gz;
+
+//			global_flags.accel_ready = 0x01;
+//			pl.accelx_s = 0xDDDDDDDD;
+//			pl.accely_s = 0xDDDDDDDD;
+//			pl.accelz_s = 0xDDDDDDDD;
+//
+//			global_flags.gyro_ready = 0x01;
+//			pl.gyrox_s = 0xDDDDDDDD;
+//			pl.gyroy_s = 0xDDDDDDDD;
+//			pl.gyroz_s = 0xDDDDDDDD;
 		}
 
 		if(global_flags.str_debug)
@@ -466,6 +476,9 @@ int main(void)
 		loadcellCounter++;
 		if(sample_cnt % 32 == 0){
 			pl.force_s = hx711_weight(&loadcell, 10);
+			//pl.force_s = 5.5;
+
+			//pl.force_s = 0xAAAAAAAA;
 
 			global_flags.force_ready = 0x01;
 			loadcellCounter = 0;
@@ -478,7 +491,7 @@ int main(void)
 		}
 		else
 		{
-			pl.force_s = 0;
+			pl.force_s = 0.0;
 		}
 
 		if(global_flags.str_debug)

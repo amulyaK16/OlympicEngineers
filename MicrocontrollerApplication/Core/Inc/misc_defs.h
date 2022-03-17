@@ -49,7 +49,7 @@ typedef struct flags_t
 /* The payload contains the
  * sensor values
  */
-typedef struct payload_t
+typedef struct __attribute__((__packed__)) payload_t
 {
 	uint16_t ecg_s[32];     //heart sensor
 	uint16_t emg_s[32];	   //emg sensor
@@ -67,7 +67,7 @@ typedef struct payload_t
 /* The packet contains all
  * overhead and meta-data
  */
-typedef struct packet_t
+typedef struct __attribute__((__packed__)) packet_t
 {
 	uint32_t  start;
 	uint16_t  packet_size;   //size of packet
