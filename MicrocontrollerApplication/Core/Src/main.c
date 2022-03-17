@@ -407,7 +407,8 @@ int main(void)
 		}
 
 		global_flags.ecg_ready = 0x01;
-		pl.ecg_s[sample_cnt - 1] = raw_ecg_val;
+		pl.ecg_s[sample_cnt - 1] = (uint16_t)raw_ecg_val;
+
 		//pl.ecg_s[sample_cnt - 1] = 0xCCCC;
 		//Get ADC value
 		sConfig.Channel= ADC_CHANNEL_5;
@@ -424,7 +425,7 @@ int main(void)
 		}
 
 		global_flags.emg_ready = 0x01;
-		pl.emg_s[sample_cnt - 1] = raw_emg_val;
+		pl.emg_s[sample_cnt - 1] = (uint16_t)raw_emg_val;
 		//pl.emg_s[sample_cnt - 1] = 0xBBBB;
 
 		// read the Accelerometer and Gyro values
