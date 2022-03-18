@@ -42,7 +42,7 @@ class CreateLiveSession(APIView):
             ACCEL_Z = [0]
             live_data = LiveData(username=USERNAME, ecg=ECG, emg=EMG, force=FORCE, gyro_x=GYRO_X, gyro_y=GYRO_Y, gyro_z=GYRO_Z, accel_x=ACCEL_X, accel_y=ACCEL_Y, accel_z=ACCEL_Z)
             live_data.save()
-            self.request.session['dataID'] = live_data.uniqueCode
+            self.request.session['uniqueCode'] = live_data.uniqueCode
             return Response(LiveDataSerializer(live_data).data, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -133,6 +133,34 @@ class SendData(APIView):
         else:
             return Response({'Bad Request': 'Invalid unique code...'}, status=status.HTTP_400_BAD_REQUEST)
        
+
+"""
+GetData
+Used by graph function to fetch data from a single field to display
+"""
+class GetData(APIView):
+    lookup_url_kwarg = 'data'
+    lookup_url_kwarg2 = 'uniqueCode'
+
+    def get(self, request, format=None):
+        data_to_find = request.GET.get(self.lookup_url_kwarg)
+        id = request.GET.get(self.lookup_url_kwarg2)
+        if id != None:
+            user = LiveData.objects.filter(uniqueCode=id)
+            if len(user) > 0:
+                user_data = LiveDataSerializer(user[0]).data
+                udata = literal_eval(user_data[data_to_find])
+                data_point = udata[0]
+                if len(udata) > 1:
+                    udata.pop(0)
+                user[0].ecg = udata
+                user[0].save()
+                return Response({'data': data_point}, status=status.HTTP_200_OK)
+            return Response({'User not found': 'invalid uniqueCode'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad request': 'uniqueCode parameter not found in request'}, status=status.HTTP_400_BAD_REQUEST)
+                
+
+
 
 
 """
