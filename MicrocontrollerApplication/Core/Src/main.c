@@ -474,14 +474,15 @@ int main(void)
 
 		// Get value from the load cell amplifier
 		//Only read the load cell value every 10000 samples
-		loadcellCounter++;
-		if(sample_cnt % 32 == 0){
+
+		if(loadcellCounter == 8){
 			pl.force_s = hx711_weight(&loadcell, 10);
 			//pl.force_s = 5.5;
 
 			//pl.force_s = 0xAAAAAAAA;
 
 			global_flags.force_ready = 0x01;
+
 			loadcellCounter = 0;
 
 			if(global_flags.str_debug)
@@ -548,6 +549,7 @@ int main(void)
 
 			global_flags.sensor_contents = 0x00; //reset all packet ready values
 			pkt_cnt ++;
+			loadcellCounter ++;
 			sample_cnt = 0;
 		}
 
