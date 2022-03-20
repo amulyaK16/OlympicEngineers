@@ -475,7 +475,7 @@ int main(void)
 		// Get value from the load cell amplifier
 		//Only read the load cell value every 10000 samples
 
-		if(loadcellCounter == 8){
+		if(loadcellCounter == 16){
 			pl.force_s = hx711_weight(&loadcell, 10);
 			//pl.force_s = 5.5;
 

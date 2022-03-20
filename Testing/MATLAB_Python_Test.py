@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 import matlab.engine
+import json
+import os
 
 '''
 Chase Badalato
@@ -106,3 +108,17 @@ def DSP_callback(packet, eng):
     packet['ECG'] = DSP_ECG(packet['ECG'], eng)
     packet['EMG'] = DSP_EMG(packet['EMG'], eng)
     return packet 
+
+if __name__ == '__main__':
+
+    testList = []
+    print("Started Reading JSON file which contains multiple JSON document")
+    with open('D:\School\Year 4\Semester 1\Project\json_data.json') as f:
+        for jsonObj in f:
+            print(jsonObj)
+            test_dict = json.loads(jsonObj)
+            testList.append(test_dict)
+
+    print("Printing each JSON Decoded Object")
+    for test in testList:
+        print(test)

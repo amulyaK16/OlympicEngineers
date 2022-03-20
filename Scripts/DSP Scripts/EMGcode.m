@@ -1,5 +1,5 @@
 function [EMG] = EMGCode(EMGtest)
-data=load('EMGlog1_finalrpt.csv');
+%data=load('EMGlog1_finalrpt.csv');
 %b=data(:,[2]);
 b = EMGtest;
 

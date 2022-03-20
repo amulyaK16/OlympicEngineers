@@ -135,52 +135,45 @@ if __name__ == '__main__':
     if send_start_cmd(port):
         print('packet collection started')
 
-    with open('json_data.json', 'w') as outfile:
+    with open('json_data.json', 'w') as infile:
+        infile.truncate(0)
+        infile.write("[]")
 
-        while not isnum:
-            test = receive_data(port)
-            print(test.hex(" "))
-            BtP = bytes_to_packet(test)
-            pack_dict = packet_to_dict(BtP)
-            js = dict_to_json(pack_dict)
+    while not isnum:
+        test = receive_data(port)
+        print(test.hex(" "))
+        BtP = bytes_to_packet(test)
+        pack_dict = packet_to_dict(BtP)
 
-            json.dump(js, outfile)
+        js_arr = []
 
-            print(js)
+        with open('json_data.json', 'r') as infile:
+            js_arr = json.load(infile)
 
-            print(pack_dict["START"])
-            print(pack_dict["PKT_SIZE"])
-            print(pack_dict["PKT_NUM"])
-            print(pack_dict["STATE"])
-            print(pack_dict["ECG"])
-            print(pack_dict["EMG"])
-            print(pack_dict["FORCE"])
-            print(pack_dict["GYRO_X"])
-            print(pack_dict["GYRO_Y"])
-            print(pack_dict["GYRO_Z"])
-            print(pack_dict["ACCEL_X"])
-            print(pack_dict["ACCEL_Y"])
-            print(pack_dict["ACCEL_Z"])
-            print(pack_dict["PL_SIZE"])
-            print(pack_dict["TIME"])
-            print("")
-            print("")
+        js = dict_to_json(test)
+        js_arr.append(js)
 
-            count += 1
-            if count == 1000:
-                isnum = True
+        with open('json_data.json', 'w') as outfile:
+            json.dump(js_arr, outfile, indent=4, separators=(", ", ": "))
+            
+        print(pack_dict["START"])
+        print(pack_dict["PKT_SIZE"])
+        print(pack_dict["PKT_NUM"])
+        print(pack_dict["STATE"])
+        print(pack_dict["ECG"])
+        print(pack_dict["EMG"])
+        print(pack_dict["FORCE"])
+        print(pack_dict["GYRO_X"])
+        print(pack_dict["GYRO_Y"])
+        print(pack_dict["GYRO_Z"])
+        print(pack_dict["ACCEL_X"])
+        print(pack_dict["ACCEL_Y"])
+        print(pack_dict["ACCEL_Z"])
+        print(pack_dict["PL_SIZE"])
+        print(pack_dict["TIME"])
+        print("")
+        print("")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        count += 1
+        if count == 1000:
+            isnum = True
