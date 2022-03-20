@@ -1,14 +1,13 @@
 function ECG = PulseCode(pulseLog) 
 %data=load('Alltest1_finalrpt.csv');
-%x1=data(:,[3]);
+%x1=load('ECG_val.txt');
 %heart rate variability 
 %https://www.mathworks.com/matlabcentral/answers/40805-heart-rate-variability
 x1 = pulseLog;
 
 % %%Pan Tompkin algorithm%%
 fs=200;
-N = length (x1);
-disp(N)% Signal length
+N = length (x1);       % Signal length
 t =[0:N-1]/fs;        % time index 
 figure(1)
 plot(t,x1)

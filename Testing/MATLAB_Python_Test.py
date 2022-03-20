@@ -4,6 +4,7 @@ import csv
 import matlab.engine
 import json
 import os
+import ast
 
 '''
 Chase Badalato
@@ -91,11 +92,12 @@ param:
     eng: matlab engine
 return: the BPM
 '''
-def DSP_Calculate_BPM(raw_array, eng):
-    matlab_ecg = matlab.uint16(raw_array)
+def DSP_BPM(raw_array, eng):
+    matlab_ecg = matlab.double(raw_array)
     dsp_array = []
-    freq, time, BPM = eng.matlab_functions(matlab_ecg, nargout = 3)
-
+    #freq, time, BPM = eng.matlab_functions(matlab_ecg, nargout = 3)
+    freq, time, bpm = eng.matlab_functions(matlab_ecg, nargout = 3)
+    return bpm
     '''
 DSP_callback
 ----------------------------
@@ -113,12 +115,27 @@ if __name__ == '__main__':
 
     testList = []
     print("Started Reading JSON file which contains multiple JSON document")
-    with open('D:\School\Year 4\Semester 1\Project\json_data.json') as f:
-        for jsonObj in f:
-            print(jsonObj)
-            test_dict = json.loads(jsonObj)
-            testList.append(test_dict)
+    with open('D:\School\Year 4\Semester 1\Project\json_data (4).json') as f:
+        listObj = json.loads(f.read())
 
-    print("Printing each JSON Decoded Object")
-    for test in testList:
-        print(test)
+    tmp = []
+    for obj in listObj:
+        tmp.append(ast.literal_eval(obj))
+
+    eng = connect_Matlab()
+
+    f = open('ECG_val.txt', 'w')
+
+    big_lst = []
+
+    for val in tmp:
+        for ecg in val["ECG"]:
+            f.write(str(ecg) + '\n')
+
+        big_lst = big_lst + val["ECG"]
+
+    tst = DSP_ECG(big_lst, eng)
+    bpm = DSP_BPM(tst, eng)
+    print(bpm)
+
+    disconnect_Matlab(eng)
