@@ -6,7 +6,7 @@ import json
 
 def connect_to_HC05_COM_port():
     for p in serial.tools.list_ports.comports():
-        if "(COM3)" in p.description:
+        if "(COM4)" in p.description:
             print("HC05 Connected Successfully!")
             return p.device
     raise IOError("Could not find STM device. Make sure it's plugged in?")
@@ -150,7 +150,7 @@ if __name__ == '__main__':
         with open('json_data.json', 'r') as infile:
             js_arr = json.load(infile)
 
-        js = dict_to_json(test)
+        js = dict_to_json(pack_dict)
         js_arr.append(js)
 
         with open('json_data.json', 'w') as outfile:
