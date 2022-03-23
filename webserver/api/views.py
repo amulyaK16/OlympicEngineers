@@ -219,7 +219,6 @@ class GetGyro(APIView):
 
     def get(self, request, format=None):
         id = request.GET.get(self.lookup_url_kwarg)
-        print("ENTERED GYRO BACKEND")
         if id != None:
             user = LiveData.objects.filter(username=id)
             if len(user) > 0:
@@ -244,6 +243,42 @@ class GetGyro(APIView):
                 return Response({'x': data_point_x, 'y': data_point_y, 'z': data_point_z}, status=status.HTTP_200_OK)
             return Response({'User not found': 'invalid uniqueCode'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'Bad request': 'uniqueCode parameter not found in request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+"""
+GetAccel
+Used to fetch data from the 3 Accelerometer axis
+"""
+class GetAccel(APIView):
+    lookup_url_kwarg = 'username'
+
+    def get(self, request, format=None):
+        id = request.GET.get(self.lookup_url_kwarg)
+        if id != None:
+            user = LiveData.objects.filter(username=id)
+            if len(user) > 0:
+                user_data = LiveDataSerializer(user[0]).data
+                udatax = literal_eval(user_data['accel_x'])
+                udatay = literal_eval(user_data['accel_y'])
+                udataz = literal_eval(user_data['accel_z'])
+                data_point_x = udatax[0]
+                data_point_y = udatay[0]
+                data_point_z = udataz[0]
+                print("ACCEL len of udatax: {}, len of udatay: {}, len of udataz: {}".format(len(udatax), len(udatay), len(udataz)))
+                if len(udatax) > 1:
+                    udatax.pop(0)
+                if len(udatay) > 1:
+                    udatay.pop(0)
+                if len(udataz) > 1:
+                    udataz.pop(0)
+                user[0].accel_x = udatax
+                user[0].accel_y = udatay
+                user[0].accel_z = udataz
+                user[0].save(update_fields=['accel_x', 'accel_y', 'accel_z'])
+                return Response({'x': data_point_x, 'y': data_point_y, 'z': data_point_z}, status=status.HTTP_200_OK)
+            return Response({'User not found': 'invalid uniqueCode'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad request': 'uniqueCode parameter not found in request'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 """
 PopData

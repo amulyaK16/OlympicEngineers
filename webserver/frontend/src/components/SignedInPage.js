@@ -357,6 +357,102 @@ function GyroChart() {
   );
 }
 
+function AccelChart() {
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (chart) {
+      console.log("accel chart:", chart);
+    }
+    const interval = setInterval(() => {
+      console.log("current accel data: ");
+      console.log(data.datasets[0].data);
+    }, 5000);
+  }, []);
+
+  const data = {
+    datasets: [
+      {
+        label: "Accelerometer x axis",
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        lineTension: 0,
+        borderDash: [8, 4],
+        data: [],
+      }, {
+        label: "Accelerometer y axis",
+        borderColor: "rgb(154, 17, 189)",
+        backgroundColor: "rgba(154, 17, 189, 0.5)",
+        lineTension: 0,
+        borderDash: [8, 4],
+        data: [],
+      }, {
+        label: "Accelerometer z axis",
+        borderColor: "rgb(140, 77, 8)",
+        backgroundColor: "rgba(140, 77, 8, 0.5)",
+        lineTension: 0,
+        borderDash: [8, 4],
+        data: [],
+      },
+    ],
+  };
+
+  const options = {
+    scales: {
+      xAxes: [
+        {
+          type: "realtime",
+          realtime: {
+            refresh: 2000,
+            onRefresh: function () {
+              var api_addr = "http://127.0.0.1:8000/api/GetAccel?username="
+                .concat("haydnbrown");
+              const requestOptions = {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+              };
+
+              fetch(api_addr, requestOptions)
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("retrieved Accelerometer data: ");
+                  console.log(data);
+                  chartRef.current.chartInstance.data.datasets[0].data.push({
+                    x: Date.now(),
+                    y: data.x,
+                  });
+                  chartRef.current.chartInstance.data.datasets[1].data.push({
+                    x: Date.now(),
+                    y: data.y,
+                  });
+                  chartRef.current.chartInstance.data.datasets[2].data.push({
+                    x: Date.now(),
+                    y: data.z,
+                  });
+                  chartRef.current.chartInstance.update();
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+              
+            },
+            delay: 2000,
+            frameRate: 15,
+          },
+        },
+      ],
+    },
+  };
+
+  return (
+    <div>
+      <Line data={data} options={options} ref={chartRef} />
+    </div>
+  );
+}
+
+
 function Greeting(props) {
   return <p>{props.value}, Haydn...</p>;
 }
@@ -396,6 +492,14 @@ export default function SignedInWrapper() {
           <CardHeader title={<Typography variant="h5">Gyro sensor data</Typography>} />
           <CardContent style={{ backgroundColor: "#fff" }}>
             <GyroChart />
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={6}>
+        <Card elevation={15}>
+          <CardHeader title={<Typography variant="h5">Accelerometer sensor data</Typography>} />
+          <CardContent style={{ backgroundColor: "#fff" }}>
+            <AccelChart />
           </CardContent>
         </Card>
       </Grid>

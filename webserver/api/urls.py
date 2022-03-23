@@ -10,6 +10,7 @@ urlpatterns = [
     path('GetEMG', GetEMG.as_view()),
     path('GetForce', GetForce.as_view()),
     path('GetGyro', GetGyro.as_view()),
+    path('GetAccel', GetAccel.as_view()),
     path('PopData', PopData.as_view()),
     path('testapi', TestAPI.as_view())
 ]
