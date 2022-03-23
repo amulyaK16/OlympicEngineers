@@ -461,7 +461,7 @@ export default function SignedInWrapper() {
   return (
     <Grid container spacing={1}>
       <Grid item sm={12} align="center">
-        <Greeting value={"Hello"} />
+        <h1>Live Data Panel</h1>
       </Grid>
       <Grid item xs={4}>
         <Card elevation={15}>
