@@ -1,0 +1,2 @@
+state_machine.c:55:6:set_state	16	static
+state_machine.c:136:6:state_action	16	static
