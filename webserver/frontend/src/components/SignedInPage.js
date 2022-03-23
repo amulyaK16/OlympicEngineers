@@ -311,7 +311,7 @@ function GyroChart() {
           realtime: {
             refresh: 2000,
             onRefresh: function () {
-              var api_addr = "http://127.0.0.1:8000/api/GetForce?username="
+              var api_addr = "http://127.0.0.1:8000/api/GetGyro?username="
                 .concat("haydnbrown");
               const requestOptions = {
                 method: "GET",

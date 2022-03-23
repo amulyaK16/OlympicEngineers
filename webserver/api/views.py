@@ -219,6 +219,7 @@ class GetGyro(APIView):
 
     def get(self, request, format=None):
         id = request.GET.get(self.lookup_url_kwarg)
+        print("ENTERED GYRO BACKEND")
         if id != None:
             user = LiveData.objects.filter(username=id)
             if len(user) > 0:
