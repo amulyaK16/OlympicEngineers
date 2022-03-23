@@ -135,33 +135,109 @@ class SendData(APIView):
        
 
 """
-GetData
-Used by graph function to fetch data from a single field to display
+GetECG
+Used to fetch data from the ecg field
 """
-class GetData(APIView):
-    lookup_url_kwarg = 'data'
-    lookup_url_kwarg2 = 'uniqueCode'
+class GetECG(APIView):
+    lookup_url_kwarg = 'username'
 
     def get(self, request, format=None):
-        data_to_find = request.GET.get(self.lookup_url_kwarg)
-        id = request.GET.get(self.lookup_url_kwarg2)
+        id = request.GET.get(self.lookup_url_kwarg)
         if id != None:
-            user = LiveData.objects.filter(uniqueCode=id)
+            user = LiveData.objects.filter(username=id)
             if len(user) > 0:
                 user_data = LiveDataSerializer(user[0]).data
-                udata = literal_eval(user_data[data_to_find])
+                udata = literal_eval(user_data['ecg'])
                 data_point = udata[0]
+                print("len of udata: {}, data_point: {}".format(len(udata), data_point))
                 if len(udata) > 1:
                     udata.pop(0)
+                print("len of udata: {}, data_point: {}".format(len(udata), data_point))
                 user[0].ecg = udata
-                user[0].save()
+                user[0].save(update_fields=['ecg'])
                 return Response({'data': data_point}, status=status.HTTP_200_OK)
             return Response({'User not found': 'invalid uniqueCode'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'Bad request': 'uniqueCode parameter not found in request'}, status=status.HTTP_400_BAD_REQUEST)
                 
 
+"""
+GetEMG
+Used to fetch data from the emg field
+"""
+class GetEMG(APIView):
+    lookup_url_kwarg = 'username'
+
+    def get(self, request, format=None):
+        id = request.GET.get(self.lookup_url_kwarg)
+        if id != None:
+            user = LiveData.objects.filter(username=id)
+            if len(user) > 0:
+                user_data = LiveDataSerializer(user[0]).data
+                udata = literal_eval(user_data['emg'])
+                data_point = udata[0]
+                print("len of udata: {}, data_point: {}".format(len(udata), data_point))
+                if len(udata) > 1:
+                    udata.pop(0)
+                print("len of udata: {}, data_point: {}".format(len(udata), data_point))
+                user[0].emg = udata
+                user[0].save(update_fields=['emg'])
+                return Response({'data': data_point}, status=status.HTTP_200_OK)
+            return Response({'User not found': 'invalid uniqueCode'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad request': 'uniqueCode parameter not found in request'}, status=status.HTTP_400_BAD_REQUEST)
+
+"""
+GetForce
+Used to fetch data from the force field
+"""
+class GetForce(APIView):
+    lookup_url_kwarg = 'username'
+
+    def get(self, request, format=None):
+        id = request.GET.get(self.lookup_url_kwarg)
+        if id != None:
+            user = LiveData.objects.filter(username=id)
+            if len(user) > 0:
+                user_data = LiveDataSerializer(user[0]).data
+                udata = literal_eval(user_data['force'])
+                data_point = udata[0]
+                print("FORCE len of udata: {}, data_point: {}".format(len(udata), data_point))
+                if len(udata) > 1:
+                    udata.pop(0)
+                print("FORCE len of udata: {}, data_point: {}".format(len(udata), data_point))
+                user[0].force = udata
+                user[0].save(update_fields=['force'])
+                return Response({'data': data_point}, status=status.HTTP_200_OK)
+            return Response({'User not found': 'invalid uniqueCode'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad request': 'uniqueCode parameter not found in request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+"""
+PopData
+Used to clear data from db
+"""
+class PopData(APIView):
+    lookup_url_kwarg2 = 'username'
+
+    def get(self, request, format=None):
+        id = request.GET.get(self.lookup_url_kwarg2)
+        if id != None:
+            user = LiveData.objects.filter(username=id)
+            if len(user) > 0:
+                user_data = LiveDataSerializer(user[0]).data
+                udataecg = literal_eval(user_data['ecg'])
+                udataemg = literal_eval(user_data['emg'])
+                data_point1 = udataecg[0]
+                data_point2 = udataemg[0]
+                print("len of udataecg: {}, len of udataemg: {}".format(len(udataecg), len(udataemg)))
+                udataecg.pop(0)
+                udataemg.pop(0)
+                user[0].ecg = udataecg
+                user[0].emg = udataemg
+                user[0].save()
+                return Response({'dataecg': data_point1, 'dataemg': data_point2}, status=status.HTTP_200_OK)
+            return Response({'User not found': 'invalid uniqueCode'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad request': 'uniqueCode parameter not found in request'}, status=status.HTTP_400_BAD_REQUEST)
+                
 
 """
 simple get endpoint to test the api by returning a simple dictionary
